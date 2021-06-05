@@ -135,17 +135,16 @@ $ docker-compose up -d postgres-book
 
 ### 1.4 RESTful microservices with Spring Web
 
-> **Assignment**. Implement a `BookController` class to expose a REST API to create, read, and delete books.
+> **Assignment**. Implement a `BookController` class to expose a REST API to create and read books.
 
 | Endpoint	      | Method   | Req. body  | Status | Resp. body     | Description    		   	     |
 |:---------------:|:--------:|:----------:|:------:|:--------------:|:-------------------------------|
 | `/books`        | `GET`    |            | 200    | Iterable<Book> | Get all the books in the catalog. |
-| `/books`        | `POST`   | Book       | 201    | Book           | Add a new book to the catalog. |
 | `/books/{isbn}` | `GET`    |            | 200    | Book           | Get the book with the given ISBN. |
-| `/books/{isbn}` | `DELETE` |            | 204    |                | Delete the book with the given ISBN. |
+| `/books`        | `POST`   | Book       | 201    | Book           | Add a new book to the catalog. |
 
 First, define a new `web` package. Then, create a `BookController` class inside with handlers for
-GET, POST, and DELETE requests as described in the table above.
+GET and POST requests as described in the table above.
 
 ```java
 @RestController
@@ -169,12 +168,6 @@ public class BookController {
 	public Book addBook(@RequestBody Book book) {
 		return bookRepository.save(book);
 	}
-
-	@DeleteMapping("{isbn}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable String isbn) {
-		bookRepository.deleteByIsbn(isbn);
-	}
 }
 ```
 
@@ -184,7 +177,6 @@ The controller makes use of a few annotations:
 * `@RequestMapping` identifies the root path mapping URI for which the class provides handlers ("/books").
 * `@GetMapping` maps HTTP GET requests onto the specific handler method.
 * `@PostMapping` maps HTTP POST requests onto the specific handler method.
-* `@DeleteMapping` maps HTTP DELETE requests onto the specific handler method.
 * `@ResponseStatus` returns a specific HTTP status if the request is successful.
 * `@PathVariable` binds a method parameter to a URI template variable ({isbn}).
 * `@RequestBody` binds a method parameter to the body of a web request.
@@ -210,8 +202,4 @@ $ http POST :8001/books isbn="1234567890" title="The Lord of the Rings"
 
 ```bash
 $ http :8001/books"
-```
-
-```bash
-$ http DELETE :8001/books/1234567890"
 ```
