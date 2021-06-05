@@ -202,7 +202,7 @@ and run the application with the command:
 $ ./gradlew bootRun
 ```
 
-You can test the application with curl or httpie.
+You can test the application with curl or [httpie](https://httpie.io).
 
 ```bash
 $ http POST :8001/books isbn="1234567890" title="The Lord of the Rings"
