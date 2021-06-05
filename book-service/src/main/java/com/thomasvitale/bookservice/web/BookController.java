@@ -38,10 +38,4 @@ public class BookController {
 		return bookRepository.save(book);
 	}
 
-	@DeleteMapping("{isbn}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable String isbn) {
-		bookRepository.deleteByIsbn(isbn);
-	}
-
 }
