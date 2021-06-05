@@ -135,7 +135,7 @@ $ docker-compose up -d postgres-book
 
 ### 1.4 RESTful microservices with Spring Web
 
-> **Assignment**. Implement a `BookController` class to expose a REST API to create, read, and delete books.
+> **Assignment**. Implement a `BookController` class to expose a REST API to create and read books.
 
 | Endpoint	      | Method   | Req. body  | Status | Resp. body     | Description    		   	     |
 |:---------------:|:--------:|:----------:|:------:|:--------------:|:-------------------------------|
@@ -144,7 +144,7 @@ $ docker-compose up -d postgres-book
 | `/books`        | `POST`   | Book       | 201    | Book           | Add a new book to the catalog. |
 
 First, define a new `web` package. Then, create a `BookController` class inside with handlers for
-GET, POST, and DELETE requests as described in the table above.
+GET and POST requests as described in the table above.
 
 ```java
 @RestController
