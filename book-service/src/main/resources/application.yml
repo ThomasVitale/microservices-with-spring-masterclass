@@ -1,6 +1,11 @@
 server:
   port: 8001
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+
 spring:
   application:
     name: book-service
@@ -8,7 +13,10 @@ spring:
     import: "optional:configserver:"
   cloud:
     config:
-      uri: http://localhost:8888
+      discovery:
+        enabled: true
+        service-id: config-server
+      uri: http://config-server
   datasource:
     url: jdbc:postgresql://localhost:5432/bookdb
     username: admin
