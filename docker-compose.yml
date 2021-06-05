@@ -13,6 +13,20 @@ services:
     volumes:
       - postgres-book-data:/var/lib/postgresql/data
 
+  postgres-order:
+    image: "postgres:13"
+    container_name: "postgres-order"
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=orderdb
+    volumes:
+      - postgres-order-data:/var/lib/postgresql/data
+
 volumes:
   postgres-book-data:
     name: postgres-book-data
+  postgres-order-data:
+    name: postgres-order-data
