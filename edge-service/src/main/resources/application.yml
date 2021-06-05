@@ -1,0 +1,42 @@
+server:
+  port: 9000
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+
+spring:
+  application:
+    name: edge-service
+  config:
+    import: "optional:configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      uri: http://config-server
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
+        - id: book-route
+          uri: lb://book-service/books
+          predicates:
+            - Path=/books/**
+        - id: order-route
+          uri: lb://order-service/orders
+          predicates:
+            - Path=/orders/**
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: edge-service
+            client-secret: 636f4ef3-e6aa-4076-a5ae-5e4925524fed
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop

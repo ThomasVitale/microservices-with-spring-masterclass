@@ -21,3 +21,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/bookdb
     username: admin
     password: admin
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop
