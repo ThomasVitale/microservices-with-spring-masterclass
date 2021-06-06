@@ -30,6 +30,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+	implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
 	implementation 'org.flywaydb:flyway-core'
 
 	compileOnly 'org.projectlombok:lombok'
@@ -43,6 +45,11 @@ dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+bootBuildImage {
+	imageName "${project.name}:${project.version}"
+	environment(['BP_JVM_VERSION': '11.*'])
 }
 
 test {

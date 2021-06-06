@@ -38,7 +38,154 @@ services:
     ports:
       - 9100:8080
 
+  # Observability
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - loki
+      - prometheus
+      - tempo
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: password
+    volumes:
+      - ./platform-config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - grafana-data:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./platform-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    command: -config.file=/etc/loki/local-config.yaml
+    depends_on:
+      - fluent-bit
+    ports:
+      - "3100:3100"
+
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:latest
+    container_name: fluent-bit
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+    volumes:
+      - ./platform-config/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    volumes:
+      - ./platform-config/tempo/tempo.yml:/etc/tempo-config.yml
+    ports:
+      - "3101:3100"     # Tempo
+      - "9411:9411"     # Zipkin
+
+  # Applications
+
+  book-service:
+    image: book-service:0.0.1-SNAPSHOT
+    container_name: book-service
+    depends_on:
+      - config-server
+      - fluent-bit
+    ports:
+      - "8001:8001"
+    environment:
+      - BPL_JVM_THREAD_COUNT=50
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
+      - KEYCLOAK_URL=http://keycloak:8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-book:5432/bookdb
+      - ZIPKIN_URL=http://tempo:9411/
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
+  order-service:
+    image: order-service:0.0.1-SNAPSHOT
+    container_name: order-service
+    depends_on:
+      - config-server
+      - fluent-bit
+    ports:
+      - "8002:8002"
+    environment:
+      - BPL_JVM_THREAD_COUNT=25
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
+      - KEYCLOAK_URL=http://keycloak:8080
+      - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-order:5432/orderdb
+      - ZIPKIN_URL=http://tempo:9411/
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
+  edge-service:
+    image: edge-service:0.0.1-SNAPSHOT
+    container_name: edge-service
+    depends_on:
+      - config-server
+      - fluent-bit
+    ports:
+      - "9000:9000"
+    environment:
+      - BPL_JVM_THREAD_COUNT=25
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
+      - KEYCLOAK_URL=http://keycloak:8080
+      - ZIPKIN_URL=http://tempo:9411/
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
+  config-server:
+    image: config-server:0.0.1-SNAPSHOT
+    container_name: config-server
+    depends_on:
+      - eureka-server
+      - fluent-bit
+    ports:
+      - "8888:8888"
+    environment:
+      - BPL_JVM_THREAD_COUNT=50
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
+  eureka-server:
+    image: eureka-server:0.0.1-SNAPSHOT
+    container_name: eureka-server
+    depends_on:
+      - fluent-bit
+    ports:
+      - "8761:8761"
+    environment:
+      - BPL_JVM_THREAD_COUNT=50
+      - EUREKA_INSTANCE_HOSTNAME=eureka-server
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
 volumes:
+  grafana-data:
+    name: grafana-data
   postgres-book-data:
     name: postgres-book-data
   postgres-order-data:

@@ -40,3 +40,5 @@ spring:
         provider:
           keycloak:
             issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop
+  zipkin:
+    base-url: ${ZIPKIN_URL:http://localhost:9411/}
