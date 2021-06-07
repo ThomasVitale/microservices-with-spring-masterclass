@@ -7,7 +7,7 @@ scrape_configs:
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['kubernetes.docker.internal:8001']
+      - targets: [ 'kubernetes.docker.internal:8001' ]
         labels:
           application: 'book-service'
   - job_name: 'order-service'
@@ -17,7 +17,7 @@ scrape_configs:
       - targets: [ 'kubernetes.docker.internal:8002' ]
         labels:
           application: 'order-service'
-  job_name: 'edge-service'
+  - job_name: 'edge-service'
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
