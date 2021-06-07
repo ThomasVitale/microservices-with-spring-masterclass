@@ -39,4 +39,4 @@ spring:
             scope: openid
         provider:
           keycloak:
-            issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop
+            issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/Bookshop
