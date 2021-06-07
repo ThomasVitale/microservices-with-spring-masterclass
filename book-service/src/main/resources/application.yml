@@ -8,3 +8,5 @@ spring:
     url: jdbc:postgresql://localhost:5432/bookdb
     username: admin
     password: admin
+  profiles:
+    active: test-data
