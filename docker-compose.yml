@@ -102,6 +102,8 @@ services:
     depends_on:
       - config-server
       - fluent-bit
+      - keycloak
+      - postgres-book
     ports:
       - "8001:8001"
     environment:
@@ -121,6 +123,8 @@ services:
     depends_on:
       - config-server
       - fluent-bit
+      - keycloak
+      - postgres-order
     ports:
       - "8002:8002"
     environment:
@@ -140,6 +144,7 @@ services:
     depends_on:
       - config-server
       - fluent-bit
+      - keycloak
     ports:
       - "9000:9000"
     environment:
