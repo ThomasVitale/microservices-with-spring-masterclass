@@ -5,6 +5,8 @@ import java.time.Duration;
 import com.thomasvitale.orderservice.domain.Order;
 import com.thomasvitale.orderservice.domain.OrderRepository;
 import com.thomasvitale.orderservice.domain.OrderStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
@@ -19,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RestController
 @RequestMapping("orders")
 public class OrderController {
+	private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 	private final OrderRepository orderRepository;
 	private final WebClient webClient;
 
@@ -29,11 +32,13 @@ public class OrderController {
 
 	@GetMapping
 	public Flux<Order> getAllOrders() {
+		log.info("Accessing all the orders");
 		return orderRepository.findAll();
 	}
 
 	@PostMapping
 	public Mono<Order> submitOrder(@RequestBody OrderRequest orderRequest) {
+		log.info("Submitting an order for book with isbn {}", orderRequest.getIsbn());
 		return webClient.get().uri("http://book-service/books/" + orderRequest.getIsbn())
 				.retrieve()
 				.bodyToMono(Book.class)
