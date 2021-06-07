@@ -19,6 +19,7 @@ public class TestDataLoader {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void loadTestData() {
+		bookRepository.deleteAll();
 		var book1 = new Book("1234567899", "The Silmarillion");
 		var book2 = new Book("1234567898", "His Dark Materials");
 		bookRepository.saveAll(List.of(book1, book2));
