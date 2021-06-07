@@ -902,7 +902,7 @@ spring:
             scope: openid
         provider:
           keycloak:
-            issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop
+            issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/Bookshop
 ```
 
 
@@ -937,7 +937,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/Bookshop
 ```
 
 By default, all endpoints are protected and require a valid OAuth2 Access Token.

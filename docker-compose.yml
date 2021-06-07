@@ -36,7 +36,7 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
     ports:
-      - 9100:8080
+      - 8080:8080
 
   # Observability
 
@@ -107,7 +107,7 @@ services:
     environment:
       - BPL_JVM_THREAD_COUNT=50
       - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
-      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_URL=http://kubernetes.docker.internal:8080
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-book:5432/bookdb
       - ZIPKIN_URL=http://tempo:9411/
     logging:
@@ -126,7 +126,7 @@ services:
     environment:
       - BPL_JVM_THREAD_COUNT=25
       - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
-      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_URL=http://kubernetes.docker.internal:8080
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres-order:5432/orderdb
       - ZIPKIN_URL=http://tempo:9411/
     logging:
@@ -145,7 +145,7 @@ services:
     environment:
       - BPL_JVM_THREAD_COUNT=25
       - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
-      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_URL=http://kubernetes.docker.internal:8080
       - ZIPKIN_URL=http://tempo:9411/
     logging:
       driver: fluentd
