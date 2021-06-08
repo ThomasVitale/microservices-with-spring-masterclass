@@ -30,3 +30,9 @@ spring:
           issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/Bookshop
   zipkin:
     base-url: ${ZIPKIN_URL:http://localhost:9411/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus

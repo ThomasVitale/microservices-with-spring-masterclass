@@ -7,34 +7,34 @@ scrape_configs:
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'kubernetes.docker.internal:8001' ]
+      - targets: [ 'book-service:8001' ]
         labels:
           application: 'book-service'
   - job_name: 'order-service'
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'kubernetes.docker.internal:8002' ]
+      - targets: [ 'order-service:8002' ]
         labels:
           application: 'order-service'
   - job_name: 'edge-service'
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'kubernetes.docker.internal:9000' ]
+      - targets: [ 'edge-service:9000' ]
         labels:
           application: 'edge-service'
   - job_name: 'config-server'
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'kubernetes.docker.internal:8888' ]
+      - targets: [ 'config-server:8888' ]
         labels:
           application: 'config-server'
   - job_name: 'eureka-server'
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'kubernetes.docker.internal:8761' ]
+      - targets: [ 'eureka-server:8761' ]
         labels:
           application: 'eureka-server'
