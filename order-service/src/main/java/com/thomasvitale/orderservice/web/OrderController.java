@@ -38,15 +38,15 @@ public class OrderController {
 
 	@PostMapping
 	public Mono<Order> submitOrder(@RequestBody OrderRequest orderRequest) {
-		log.info("Submitting an order for book with isbn {}", orderRequest.getIsbn());
-		return webClient.get().uri("http://book-service/books/" + orderRequest.getIsbn())
+		log.info("Submitting an order for book with isbn {}", orderRequest.isbn());
+		return webClient.get().uri("http://book-service/books/" + orderRequest.isbn())
 				.retrieve()
 				.bodyToMono(Book.class)
 				.timeout(Duration.ofSeconds(2), Mono.empty())
 				.onErrorResume(exception -> Mono.empty())
 				.retryWhen(Retry.backoff(3, Duration.ofMillis(100)))
-				.flatMap(book -> Mono.just(new Order(orderRequest.getIsbn(), OrderStatus.ACCEPTED)))
-				.defaultIfEmpty(new Order(orderRequest.getIsbn(), OrderStatus.REJECTED))
+				.flatMap(book -> Mono.just(new Order(null, orderRequest.isbn(), OrderStatus.ACCEPTED)))
+				.defaultIfEmpty(new Order(null, orderRequest.isbn(), OrderStatus.REJECTED))
 				.flatMap(orderRepository::save);
 	}
 

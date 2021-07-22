@@ -25,7 +25,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/Bookshop
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/auth/realms/Bookshop
   zipkin:
     base-url: ${ZIPKIN_URL:http://localhost:9411/}
 
@@ -33,4 +33,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,prometheus
+        include: health,prometheus,refresh
