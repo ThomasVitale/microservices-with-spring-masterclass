@@ -14,7 +14,7 @@ services:
       - postgres-book-data:/var/lib/postgresql/data
 
   postgres-order:
-    image: "postgres:13"
+    image: "postgres:13.4"
     container_name: "postgres-order"
     ports:
       - 5433:5432

@@ -438,7 +438,7 @@ in a PostgreSQL database.
 ### 4.1 Initializing a Spring Boot project
 
 > **Assignment**. Initialize a new Spring Boot project for Order Service including the following dependencies:
-> Spring Reactive Web, Spring Data R2DBC, PostgreSQL Driver, Lombok, Eureka Discovery Client, and Config Client.
+> Spring Reactive Web, Spring Data R2DBC, PostgreSQL Driver, Eureka Discovery Client, and Config Client.
 > Then, configure application name, server port, and integration with Eureka Server and Config Server.
 
 You can initialize a new Spring Boot project for **Order Service** from [Spring Initializr](https://start.spring.io).
@@ -447,10 +447,10 @@ Configure the project as follows:
 
 * _Project_: Gradle
 * _Language_: Java
-* _Spring Boot_: 2.5.1+
+* _Spring Boot_: 2.6.0+
 * _Name_: book-service
 * _Packaging_: JAR
-* _Java_: 11+
+* _Java_: 17+
 
 Choose the following dependencies:
 
@@ -460,8 +460,6 @@ Choose the following dependencies:
   to persist data in relational databases with R2DBC using Spring Data in reactive applications.
 * _PostgreSQL Driver (`io.r2dbc:r2dbc-postgresql`)_ provides an R2DBC driver that allows the application to connect
   to a PostgreSQL database reactively.
-* _Lombok (`org.projectlombok:lombok`)_ is an annotation library that helps reducing boilerplate code. It's not
-  required, but it'll help me showing you cleaner and more focused examples.
 * _Eureka Discovery Client (`org.springframework.cloud:spring-cloud-starter-netflix-eureka-client`)_ provides
   integration with a Eureka Server.
 * _Config Client (`org.springframework.cloud:spring-cloud-starter-config`)_ provides integration with a Config Server.
@@ -510,24 +508,15 @@ The Order Service application will let you manage orders for books. First of all
 
 ```java
 @Table("orders")
-@Data @NoArgsConstructor
-public class Order {
-
+public record Order(
   @Id
-  private Long id;
-  private String isbn;
-  private OrderStatus status;
-
-  public Order(String isbn, OrderStatus status) {
-    this.isbn = isbn;
-    this.status = status;
-  }
-}
+  Long id,
+  String isbn,
+  OrderStatus status
+){}
 ```
 
 * `@Table` is a Spring Data annotation to customize the table name associated to the entity.
-* `@Data` is a Lombok annotation to generate boilerplate code for the class, such as getters and setters.
-* `@NoArgsConstructor` is a Lombok annotation to generate a constructor with no arguments.
 * `@Id` is a Spring Data annotation to mark the identifier (primary key) of the domain entity.
 
 The `OrderStatus` enum is defined as follows.
@@ -555,6 +544,9 @@ spring:
     username: admin
     password: admin
     url: r2dbc:postgresql://localhost:5433/orderdb
+  sql:
+    init:
+      mode: always
 ```
 
 Finally, create an SQL file to initialize the schema for the `Order` domain entity.
@@ -578,7 +570,7 @@ Create a `docker-compose.yml` file and define a service to run a PostgreSQL data
 version: "3.8"
 services:
   postgres-book:
-    image: "postgres:latest"
+    image: "postgres:13.4"
     container_name: "postgres-book"
     ports:
       - 5432:5432
@@ -626,7 +618,7 @@ public class OrderController {
 
   @PostMapping
   public Mono<Order> submitOrder(@RequestBody OrderRequest orderRequest) {
-    return orderRepository.save(new Order(orderRequest.getIsbn(), OrderStatus.REJECTED));
+    return orderRepository.save(new Order(null, orderRequest.getIsbn(), OrderStatus.REJECTED));
   }
 }
 ```
@@ -666,12 +658,10 @@ public class WebConfig {
 Then, define a `Book` class to parse the book data retrieved by Book Service.
 
 ```bash
-@Data
-public class Book {
-	private Long id;
-	private String isbn;
-	private String title;
-}
+public record Book(
+	String isbn,
+	String title
+){}
 ```
 
 Finally, update `OrderController` to use a `WebClient` and call Book Service to retrieve the book being ordered.
@@ -680,35 +670,35 @@ Service discovery and load balancing happen under the hood thanks to Spring Boot
 Explore the utilities offered by Reactive Spring to make the integration point resilient through
 timeouts, retries, and fallbacks.
 
-```bash
+```java
 @RestController
 @RequestMapping("orders")
 public class OrderController {
-	private final OrderRepository orderRepository;
-	private final WebClient webClient;
+  private final OrderRepository orderRepository;
+  private final WebClient webClient;
 
-	public OrderController(OrderRepository orderRepository, WebClient.Builder webClientBuilder) {
-		this.orderRepository = orderRepository;
-		this.webClient = webClientBuilder.build();
-	}
+  public OrderController(OrderRepository orderRepository, WebClient.Builder webClientBuilder) {
+    this.orderRepository = orderRepository;
+    this.webClient = webClientBuilder.build();
+  }
 
-	@GetMapping
-	public Flux<Order> getAllOrders() {
-		return orderRepository.findAll();
-	}
+  @GetMapping
+  public Flux<Order> getAllOrders() {
+    return orderRepository.findAll();
+  }
 
-	@PostMapping
-	public Mono<Order> submitOrder(@RequestBody OrderRequest orderRequest) {
-		return webClient.get().uri("http://book-service/books/" + orderRequest.getIsbn())
-				.retrieve()
-				.bodyToMono(Book.class)
-				.timeout(Duration.ofSeconds(2), Mono.empty())
-				.onErrorResume(exception -> Mono.empty())
-				.retryWhen(Retry.backoff(3, Duration.ofMillis(100)))
-				.flatMap(book -> Mono.just(new Order(orderRequest.getIsbn(), OrderStatus.ACCEPTED)))
-				.defaultIfEmpty(new Order(orderRequest.getIsbn(), OrderStatus.REJECTED))
-				.flatMap(orderRepository::save);
-	}
+  @PostMapping
+  public Mono<Order> submitOrder(@RequestBody OrderRequest orderRequest) {
+    return webClient.get().uri("http://book-service/books/" + orderRequest.isbn())
+            .retrieve()
+            .bodyToMono(Book.class)
+            .timeout(Duration.ofSeconds(2), Mono.empty())
+            .onErrorResume(exception -> Mono.empty())
+            .retryWhen(Retry.backoff(3, Duration.ofMillis(100)))
+            .flatMap(book -> Mono.just(new Order(null, orderRequest.isbn(), OrderStatus.ACCEPTED)))
+            .defaultIfEmpty(new Order(null, orderRequest.isbn(), OrderStatus.REJECTED))
+            .flatMap(orderRepository::save);
+  }
 }
 ```
 
