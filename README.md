@@ -217,10 +217,10 @@ Configure the project as follows:
 
 * _Project_: Gradle
 * _Language_: Java
-* _Spring Boot_: 2.5.1+
+* _Spring Boot_: 2.6.0+
 * _Name_: config-server
 * _Packaging_: JAR
-* _Java_: 11+
+* _Java_: 17+
 
 Choose the following dependencies:
 
@@ -282,7 +282,7 @@ Open the Book Service project and add a new dependency on `org.springframework.c
 
 ```groovy
 ext {
-  set('springCloudVersion', "2020.0.4-SNAPSHOT")
+  set('springCloudVersion', "2021.0.0-RC1")
 }
 
 dependencies {
@@ -291,9 +291,7 @@ dependencies {
   implementation 'org.springframework.cloud:spring-cloud-starter-config'
   implementation 'org.flywaydb:flyway-core'
 
-  compileOnly 'org.projectlombok:lombok'
   runtimeOnly 'org.postgresql:postgresql'
-  annotationProcessor 'org.projectlombok:lombok'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
