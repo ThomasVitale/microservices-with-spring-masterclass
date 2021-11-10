@@ -751,10 +751,10 @@ Configure the project as follows:
 
 * _Project_: Gradle
 * _Language_: Java
-* _Spring Boot_: 2.5.1+
+* _Spring Boot_: 2.6.0+
 * _Name_: book-service
 * _Packaging_: JAR
-* _Java_: 11+
+* _Java_: 17+
 
 Choose the following dependencies:
 
@@ -841,17 +841,16 @@ with the following.
 
 ```yaml
 keycloak:
-  image: jboss/keycloak:13.0.0
+  image: thomasvitale/keycloak-m1:15.0.1 # Use jboss/keycloak:15.0.1 on Intel processors
   container_name: "keycloak"
   volumes:
     - ./platform-config/keycloak:/opt/jboss/keycloak/imports
-  command:
-    - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
   environment:
-    KEYCLOAK_USER: admin
+    KEYCLOAK_USER: user
     KEYCLOAK_PASSWORD: password
+    KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
   ports:
-    - 9100:8080
+    - 8080:8080
 ```
 
 Then, create a `platform-config/keyclok` folder and copy the `realm-export.json` file into it
@@ -862,7 +861,7 @@ $ docker-compose up -d keycloak
 ```
 
 Keycloak is already configured with two users: Isabelle (`isabelle/password`) and Bjorn (`bjorn/password`).
-You can access the administration control on http://localhost:9100 using the credential `admin/password`.
+You can access the administration control on http://localhost:8080 using the credential `admin/password`.
 
 ### 5.4 Securing microservices with OAuth2 and OpenID Connect (Client)
 
@@ -877,18 +876,17 @@ Then, update the `application.yml` file to configure OAuth2/OpenID Connect. Keyc
 to support an OAuth2 Client named `edge-service`. Let's register it in Spring Security too.
 
 ```yaml
-spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: edge-service
-            client-secret: 636f4ef3-e6aa-4076-a5ae-5e4925524fed
-            scope: openid
-        provider:
-          keycloak:
-            issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop
+security:
+  oauth2:
+    client:
+      registration:
+        keycloak:
+          client-id: edge-service
+          client-secret: polar-keycloak-secret
+          scope: openid
+      provider:
+        keycloak:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/auth/realms/PolarBookshop
 ```
 
 
@@ -923,7 +921,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_URL:http://localhost:9100}/auth/realms/PolarBookshop
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/auth/realms/PolarBookshop
 ```
 
 By default, all endpoints are protected and require a valid OAuth2 Access Token.

@@ -26,15 +26,14 @@ services:
       - postgres-order-data:/var/lib/postgresql/data
 
   keycloak:
-    image: jboss/keycloak:13.0.0
+    image: thomasvitale/keycloak-m1:15.0.1 # Use jboss/keycloak:15.0.1 on Intel processors
     container_name: "keycloak"
     volumes:
       - ./platform-config/keycloak:/opt/jboss/keycloak/imports
-    command:
-      - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
     environment:
-      KEYCLOAK_USER: admin
+      KEYCLOAK_USER: user
       KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
     ports:
       - 8080:8080
 
