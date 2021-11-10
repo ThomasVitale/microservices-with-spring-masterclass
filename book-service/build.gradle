@@ -1,12 +1,12 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.4-SNAPSHOT'
+	id 'org.springframework.boot' version '2.6.0-RC1'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
 
 group = 'com.thomasvitale'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '16'
+sourceCompatibility = '17'
 
 configurations {
 	compileOnly {
@@ -21,7 +21,8 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2020.0.4-SNAPSHOT")
+	set('springCloudVersion', "2021.0.0-RC1")
+	set('testcontainersVersion', "1.16.0")
 }
 
 dependencies {
@@ -35,17 +36,19 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
 	implementation 'org.flywaydb:flyway-core'
 
-	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
+	testImplementation 'org.testcontainers:postgresql'
 }
 
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
 	}
 }
 

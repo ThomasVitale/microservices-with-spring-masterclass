@@ -35,11 +35,12 @@ spring:
         registration:
           keycloak:
             client-id: edge-service
-            client-secret: 636f4ef3-e6aa-4076-a5ae-5e4925524fed
+            client-secret: polar-keycloak-secret
             scope: openid
         provider:
           keycloak:
-            issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/auth/realms/Bookshop
+            issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/auth/realms/PolarBookshop
+
   zipkin:
     base-url: ${ZIPKIN_URL:http://localhost:9411/}
 
