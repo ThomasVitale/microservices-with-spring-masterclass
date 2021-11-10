@@ -934,3 +934,22 @@ Re-run Edge Service, Book Service, and Order Service. Then, open the browser, an
 Spring Security will redirect you to Keycloak for authentication. Log in as Isabelle or Bjorn.
 After a successfull authentication, you're redirected back to Edge Service and finally to Book Service.
 If you previously added any book to the catalog, you'd see them now listed in a JSON format.
+
+## Lab 6 - Efficient container images
+
+The Spring Boot plugin for Gradle and Maven comes built-in with Cloud Native Buildpacks (Paketo) for building efficient
+container images directly from the application source code. No Dockerfile is needed.
+
+Open a Terminal window, navigate to the root folder of one of the application, and run the following command.
+
+```bash
+$ ./gradlew bootBuildImage
+```
+
+The result is a container image of your application, ready to be deployed to production.
+
+You can check the result with the following command:
+
+```bash
+$ docker images | grep -i <your-app-name>
+```
