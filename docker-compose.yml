@@ -1,8 +1,8 @@
-version: "3.8"
+version: "3.9"
 services:
 
   postgres-book:
-    image: "postgres:13"
+    image: "postgres:13.4"
     container_name: "postgres-book"
     ports:
       - 5432:5432
@@ -14,7 +14,7 @@ services:
       - postgres-book-data:/var/lib/postgresql/data
 
   postgres-order:
-    image: "postgres:13"
+    image: "postgres:13.4"
     container_name: "postgres-order"
     ports:
       - 5433:5432

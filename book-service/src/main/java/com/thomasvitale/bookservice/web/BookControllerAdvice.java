@@ -1,7 +1,6 @@
 package com.thomasvitale.bookservice.web;
 
 import com.thomasvitale.bookservice.domain.BookNotFoundException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

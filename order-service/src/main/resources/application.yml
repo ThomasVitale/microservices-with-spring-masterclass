@@ -21,6 +21,9 @@ spring:
     username: admin
     password: admin
     url: r2dbc:postgresql://localhost:5433/orderdb
+  sql:
+    init:
+      mode: always
   security:
     oauth2:
       resourceserver:

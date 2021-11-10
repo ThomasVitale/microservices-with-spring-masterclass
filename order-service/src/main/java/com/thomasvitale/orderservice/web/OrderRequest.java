@@ -1,8 +1,5 @@
 package com.thomasvitale.orderservice.web;
 
-import lombok.Data;
-
-@Data
-public class OrderRequest {
-	private String isbn;
-}
+public record OrderRequest(
+	String isbn
+){}
