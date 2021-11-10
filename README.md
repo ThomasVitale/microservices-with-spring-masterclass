@@ -339,10 +339,10 @@ Configure the project as follows:
 
 * _Project_: Gradle
 * _Language_: Java
-* _Spring Boot_: 2.5.1+
+* _Spring Boot_: 2.6.0+
 * _Name_: config-server
 * _Packaging_: JAR
-* _Java_: 11+
+* _Java_: 17+
 
 Choose the following dependencies:
 
