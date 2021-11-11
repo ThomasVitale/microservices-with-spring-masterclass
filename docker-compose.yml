@@ -37,59 +37,59 @@ services:
     ports:
       - 8080:8080
 
-    # Observability
+  # Observability
 
-    grafana:
-      image: grafana/grafana:8.2.3
-      container_name: grafana
-      depends_on:
-        - loki
-        - prometheus
-        - tempo
-      ports:
-        - "3000:3000"
-      environment:
-        GF_SECURITY_ADMIN_USER: user
-        GF_SECURITY_ADMIN_PASSWORD: password
-      volumes:
-        - ./platform/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
-        - ./platform/grafana/dashboards:/etc/grafana/provisioning/dashboards
+  grafana:
+    image: grafana/grafana:8.2.3
+    container_name: grafana
+    depends_on:
+      - loki
+      - prometheus
+      - tempo
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: user
+      GF_SECURITY_ADMIN_PASSWORD: password
+    volumes:
+      - ./platform/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./platform/grafana/dashboards:/etc/grafana/provisioning/dashboards
 
-    prometheus:
-      image: prom/prometheus:v2.30.3
-      container_name: prometheus
-      ports:
-        - "9090:9090"
-      volumes:
-        - "./platform/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+  prometheus:
+    image: prom/prometheus:v2.30.3
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./platform/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
 
-    loki:
-      image: grafana/loki:2.4.0
-      container_name: loki
-      depends_on:
-        - fluent-bit
-      ports:
-        - "3100:3100"
+  loki:
+    image: grafana/loki:2.4.0
+    container_name: loki
+    depends_on:
+      - fluent-bit
+    ports:
+      - "3100:3100"
 
-    fluent-bit:
-      image: grafana/fluent-bit-plugin-loki:2.4.0-amd64
-      container_name: fluent-bit
-      ports:
-        - "24224:24224"
-      environment:
-        - LOKI_URL=http://loki:3100/loki/api/v1/push
-      volumes:
-        - ./platform/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:2.4.0-amd64
+    container_name: fluent-bit
+    ports:
+      - "24224:24224"
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+    volumes:
+      - ./platform/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
 
-    tempo:
-      image: grafana/tempo:1.2.0
-      container_name: tempo
-      command: -config.file /etc/tempo-config.yml
-      volumes:
-        - ./platform/tempo/tempo.yml:/etc/tempo-config.yml
-      ports:
-        - "3101:3100"     # Tempo
-        - "9411:9411"     # Zipkin
+  tempo:
+    image: grafana/tempo:1.2.0
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    volumes:
+      - ./platform/tempo/tempo.yml:/etc/tempo-config.yml
+    ports:
+      - "3101:3100"     # Tempo
+      - "9411:9411"     # Zipkin
 
   # Applications
 
